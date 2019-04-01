@@ -2,6 +2,9 @@ package edu.asupoly.ser422.lab3.model;
 
 import java.io.Serializable;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
+@XmlRootElement
 public class PhoneEntry implements Serializable {
 
 	private static final long serialVersionUID = -1677170407015487765L;
@@ -13,6 +16,9 @@ public class PhoneEntry implements Serializable {
 		this.firstname = name;
 		this.lastname = lname;
 		this.phone = phone;
+	}
+
+	public PhoneEntry() {
 	}
 
 	public String getFirstname() {

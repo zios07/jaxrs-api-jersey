@@ -2,12 +2,15 @@ package edu.asupoly.ser422.lab3.service;
 
 import static edu.asupoly.ser422.lab3.utils.Utils.CONFIG_FILE;
 import static edu.asupoly.ser422.lab3.utils.Utils.CONFIG_PHONEBOOK_FILES_PATH_KEY;
+import static edu.asupoly.ser422.lab3.utils.Utils.DEFAULT_FILENAME;
 import static edu.asupoly.ser422.lab3.utils.Utils.EXTENSION;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 import org.apache.tomcat.util.http.fileupload.FileUtils;
@@ -28,8 +31,12 @@ public class PhoneBookService {
 
 	public PhoneBook getPhoneBook(String pbookName) throws CustomException {
 		try {
-			InputStream is = new FileInputStream(resolveFullPath(pbookName));
-			return new PhoneBook(is);
+			if (pbookName != null) {
+				InputStream is = new FileInputStream(resolveFullPath(pbookName));
+				return new PhoneBook(is);
+			} else {
+				return new PhoneBook(new FileInputStream(resolveFullPath(DEFAULT_FILENAME)));
+			}
 		} catch (IOException e) {
 			throw new CustomException("File with name : " + pbookName + " does not exist!");
 		}
@@ -52,6 +59,24 @@ public class PhoneBookService {
 	}
 
 	private String resolveFullPath(String fileName) {
-		return properties.getProperty(CONFIG_PHONEBOOK_FILES_PATH_KEY) + "/" + fileName + EXTENSION;
+		String path = properties.getProperty(CONFIG_PHONEBOOK_FILES_PATH_KEY) + "/" + fileName;
+		path += fileName.contains(EXTENSION) ? "" : EXTENSION;
+		return path;
+	}
+
+	public List<PhoneBook> getPhoneBooks() throws CustomException {
+		List<PhoneBook> pbooks = new ArrayList<>();
+		File folder = new File(properties.getProperty(CONFIG_PHONEBOOK_FILES_PATH_KEY));
+		File[] listOfFiles = folder.listFiles();
+		for (File file : listOfFiles) {
+			if (file.isFile() && file.getName() != null && file.getName().contains(EXTENSION)) {
+				try {
+					pbooks.add(new PhoneBook(new FileInputStream(file), file.getName()));
+				} catch (IOException | CustomException e) {
+					throw new CustomException(e.getMessage());
+				}
+			}
+		}
+		return pbooks;
 	}
 }

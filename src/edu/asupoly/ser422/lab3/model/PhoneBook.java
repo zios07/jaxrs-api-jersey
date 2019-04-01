@@ -1,9 +1,11 @@
 package edu.asupoly.ser422.lab3.model;
 
+import static edu.asupoly.ser422.lab3.utils.Utils.CONFIG_FILE;
+import static edu.asupoly.ser422.lab3.utils.Utils.CONFIG_PHONEBOOK_FILES_PATH_KEY;
 import static edu.asupoly.ser422.lab3.utils.Utils.DEFAULT_FILENAME;
+import static edu.asupoly.ser422.lab3.utils.Utils.UNLISTED_FILENAME;
 
 import java.io.BufferedReader;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -15,31 +17,43 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
+
+import edu.asupoly.ser422.lab3.exception.CustomException;
+import edu.asupoly.ser422.lab3.listener.ApplicationInitializer;
 
 public class PhoneBook implements Serializable {
 
 	private static final long serialVersionUID = -2134102172191011457L;
 
 	private Map<String, PhoneEntry> _pbook = new HashMap<String, PhoneEntry>();
+	private String fname;
 
-	public PhoneBook() throws IOException {
+	private Gson gson = null;
+
+	public PhoneBook() throws IOException, CustomException {
 		this(DEFAULT_FILENAME);
 	}
 
-	public PhoneBook(String fname) throws IOException {
+	public PhoneBook(String fname) throws IOException, CustomException {
 		this(PhoneBook.class.getClassLoader().getResourceAsStream(fname));
 	}
 
-	public PhoneBook(InputStream is) throws IOException {
+	public PhoneBook(InputStream is) throws IOException, CustomException {
 		this(new BufferedReader(new InputStreamReader(is)));
 	}
 
-	private PhoneBook(BufferedReader br) throws IOException {
-		Gson gson = null;
+	public PhoneBook(InputStream is, String fname) throws IOException, CustomException {
+		this(new BufferedReader(new InputStreamReader(is)));
+		this.fname = fname;
+	}
+
+	private PhoneBook(BufferedReader br) throws IOException, CustomException {
+		gson = new GsonBuilder().setPrettyPrinting().create();
 		try {
 			StringBuilder sb = new StringBuilder();
 
@@ -47,32 +61,32 @@ public class PhoneBook implements Serializable {
 			while ((line = br.readLine()) != null) {
 				sb.append(line);
 			}
-			gson = new GsonBuilder().setPrettyPrinting().create();
-			Type listType = new TypeToken<ArrayList<PhoneEntry>>(){}.getType();
+			Type listType = new TypeToken<ArrayList<PhoneEntry>>() {
+			}.getType();
 			List<PhoneEntry> jsonPEntries = gson.fromJson(sb.toString(), listType);
-			jsonPEntries.stream().forEach(pEntry -> {
+			for (PhoneEntry pEntry : jsonPEntries) {
 				addEntry(pEntry.getPhone(), pEntry);
-			});
-			
+			}
+
 			br.close();
-		} catch (Exception e) {
+		} catch (IOException e) {
 			e.printStackTrace();
 			System.out.println("Error process phonebook");
 			throw new IOException("Could not process phonebook file");
 		}
 	}
 
-	public void savePhoneBook(String fname) {
+	public void savePhoneBook(String fname) throws CustomException {
 		try {
-			PrintWriter pw = new PrintWriter(new FileOutputStream(fname));
-			String[] entries = listEntries();
-			for (int i = 0; i < entries.length; i++)
-				pw.println(entries[i]);
-
+			Properties properties = new Properties();
+			properties.load(ApplicationInitializer.class.getClassLoader().getResourceAsStream(CONFIG_FILE));
+			PrintWriter pw = new PrintWriter(properties.get(CONFIG_PHONEBOOK_FILES_PATH_KEY) + "/"
+					+ (fname != null ? fname : UNLISTED_FILENAME));
+			pw.write(gson.toJson(_pbook.values()));
 			pw.close();
 		} catch (Exception exc) {
 			exc.printStackTrace();
-			System.out.println("Error saving phone book");
+			throw new CustomException("Error saving phone book");
 		}
 	}
 
@@ -81,16 +95,23 @@ public class PhoneBook implements Serializable {
 		pentry.changeName(fname, lname);
 	}
 
-	public void addEntry(String fname, String lname, String phone) {
+	public void addEntry(String fname, String lname, String phone) throws CustomException {
 		addEntry(phone, new PhoneEntry(fname, lname, phone));
 	}
 
-	public void addEntry(String number, PhoneEntry entry) {
-		_pbook.put(number, entry);
+	public void addEntry(String number, PhoneEntry entry) throws CustomException {
+		if (!_pbook.containsKey(number))
+			_pbook.put(number, entry);
+		else
+			throw new CustomException("Cannot add this PhoneEntry. Phone number already exists : " + number);
 	}
 
 	public PhoneEntry removeEntry(String phone) {
 		return _pbook.remove(phone);
+	}
+
+	public PhoneEntry findEntry(String phone) {
+		return _pbook.get(phone);
 	}
 
 	public String[] listEntries() {
@@ -106,6 +127,14 @@ public class PhoneBook implements Serializable {
 
 	public Map<String, PhoneEntry> get_pbook() {
 		return _pbook;
+	}
+
+	public String getFname() {
+		return fname;
+	}
+
+	public void setFname(String fname) {
+		this.fname = fname;
 	}
 
 }
