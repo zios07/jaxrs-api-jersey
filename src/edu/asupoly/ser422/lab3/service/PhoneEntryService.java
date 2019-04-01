@@ -20,9 +20,19 @@ public class PhoneEntryService {
 	}
 
 	public PhoneEntry createPhoneEntry(PhoneEntry pEntry) throws CustomException {
-		PhoneBook pbook = pbookService.getPhoneBook(UNLISTED_FILENAME);
-		pbook.addEntry(pEntry.getPhone(), pEntry);
-		pbook.savePhoneBook(UNLISTED_FILENAME);
+		List<PhoneBook> pbooks = pbookService.getPhoneBooks();
+		boolean valid = true;
+		for (PhoneBook pbook : pbooks) {
+			if (pbook.get_pbook().containsKey(pEntry.getPhone())) {
+				valid = false;
+				break;
+			}
+		}
+		if (valid) {
+			PhoneBook pbook = pbookService.getPhoneBook(UNLISTED_FILENAME);
+			pbook.addEntry(pEntry.getPhone(), pEntry);
+			pbook.savePhoneBook(UNLISTED_FILENAME);
+		}
 		return pEntry;
 	}
 
