@@ -44,7 +44,7 @@ public class PhoneEntryResource {
 	public Response movePhoneEntryToPhoneBook(@PathParam("phoneNumber") String phoneNumber,
 			@PathParam("pbookName") String pbookName) throws CustomException {
 		boolean moved = pEntryService.movePhoneEntry(phoneNumber, pbookName);
-		return Response.status(Response.Status.OK).entity(moved ? "Success" : "Failed").build();
+		return Response.status(Response.Status.OK).entity(moved).build();
 	}
 
 	@PUT
@@ -64,7 +64,8 @@ public class PhoneEntryResource {
 
 	@GET
 	@Path("/search/pbook/{pbookName}")
-	public Response searchByCriteria(@PathParam("pbookName") String pbookName, @QueryParam("lastname") String lastname, @QueryParam("areaCode") int areaCode) throws CustomException {
+	public Response searchByCriteria(@PathParam("pbookName") String pbookName, @QueryParam("lastname") String lastname,
+			@QueryParam("areaCode") int areaCode) throws CustomException {
 		List<PhoneEntry> result = pEntryService.findByCriteria(pbookName, lastname, areaCode);
 		return Response.status(Response.Status.OK).entity(result).build();
 	}

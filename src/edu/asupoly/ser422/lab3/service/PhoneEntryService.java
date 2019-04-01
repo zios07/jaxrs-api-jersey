@@ -32,6 +32,8 @@ public class PhoneEntryService {
 			PhoneBook pbook = pbookService.getPhoneBook(UNLISTED_FILENAME);
 			pbook.addEntry(pEntry.getPhone(), pEntry);
 			pbook.savePhoneBook(UNLISTED_FILENAME);
+		} else {
+			throw new CustomException("An entry with the same phone number already exists!");
 		}
 		return pEntry;
 	}
