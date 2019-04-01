@@ -13,6 +13,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+import javax.ws.rs.NotFoundException;
+
 import org.apache.tomcat.util.http.fileupload.FileUtils;
 
 import edu.asupoly.ser422.lab3.exception.CustomException;
@@ -38,7 +40,7 @@ public class PhoneBookService {
 				return new PhoneBook(new FileInputStream(resolveFullPath(DEFAULT_FILENAME)));
 			}
 		} catch (IOException e) {
-			throw new CustomException("File with name : " + pbookName + " does not exist!");
+			throw new NotFoundException("File with name : " + pbookName + " does not exist!");
 		}
 	}
 

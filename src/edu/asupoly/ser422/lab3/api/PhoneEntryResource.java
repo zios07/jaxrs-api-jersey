@@ -19,7 +19,7 @@ import edu.asupoly.ser422.lab3.model.PhoneEntry;
 import edu.asupoly.ser422.lab3.service.PhoneEntryService;
 
 @Path("phoneEntries")
-@Produces(MediaType.APPLICATION_JSON)
+@Produces(value = { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
 public class PhoneEntryResource {
 
 	private PhoneEntryService pEntryService = new PhoneEntryService();

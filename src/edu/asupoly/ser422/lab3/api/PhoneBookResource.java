@@ -13,7 +13,7 @@ import edu.asupoly.ser422.lab3.model.PhoneBook;
 import edu.asupoly.ser422.lab3.service.PhoneBookService;
 
 @Path("/phonebooks")
-@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+@Produces(value = { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
 public class PhoneBookResource {
 
 	private PhoneBookService pbookService = new PhoneBookService();

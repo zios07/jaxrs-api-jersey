@@ -6,6 +6,8 @@ import static edu.asupoly.ser422.lab3.utils.Utils.UNLISTED_FILENAME;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.ws.rs.NotFoundException;
+
 import edu.asupoly.ser422.lab3.exception.CustomException;
 import edu.asupoly.ser422.lab3.model.PhoneBook;
 import edu.asupoly.ser422.lab3.model.PhoneEntry;
@@ -16,7 +18,9 @@ public class PhoneEntryService {
 
 	public PhoneEntry getPhoneEntryByPhoneNumber(String pbookName, String phone) throws CustomException {
 		PhoneBook pbook = pbookService.getPhoneBook(pbookName);
-		return pbook.findEntry(phone);
+		if (pbook.get_pbook().containsKey(phone))
+			return pbook.findEntry(phone);
+		throw new NotFoundException("No phone entry found for this phone number");
 	}
 
 	public PhoneEntry createPhoneEntry(PhoneEntry pEntry) throws CustomException {
@@ -80,7 +84,7 @@ public class PhoneEntryService {
 			}
 		}
 		if (targetpEntry == null) {
-			throw new CustomException("No phone entry found with the phone number : " + oldPhone);
+			throw new NotFoundException("No phone entry found with the phone number : " + oldPhone);
 		}
 		return targetpEntry;
 	}
@@ -96,7 +100,7 @@ public class PhoneEntryService {
 			}
 		}
 		if (!foundMatch)
-			throw new CustomException("No phone entry found");
+			throw new NotFoundException("No phone entry found");
 		return foundMatch;
 	}
 
