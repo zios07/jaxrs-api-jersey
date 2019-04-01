@@ -3,7 +3,10 @@ package edu.asupoly.ser422.lab3.model;
 import java.io.*;
 import java.util.*;
 
-public class PhoneBook {
+public class PhoneBook implements Serializable {
+
+	private static final long serialVersionUID = -2134102172191011457L;
+
 	public static final String DEFAULT_FILENAME = "phonebook.txt";
 
 	private Map<String, PhoneEntry> _pbook = new HashMap<String, PhoneEntry>();
