@@ -1,13 +1,28 @@
 package edu.asupoly.ser422.lab3.model;
 
-import java.io.*;
-import java.util.*;
+import static edu.asupoly.ser422.lab3.utils.Utils.DEFAULT_FILENAME;
+
+import java.io.BufferedReader;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.io.Serializable;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 
 public class PhoneBook implements Serializable {
 
 	private static final long serialVersionUID = -2134102172191011457L;
-
-	public static final String DEFAULT_FILENAME = "phonebook.txt";
 
 	private Map<String, PhoneEntry> _pbook = new HashMap<String, PhoneEntry>();
 
@@ -24,19 +39,21 @@ public class PhoneBook implements Serializable {
 	}
 
 	private PhoneBook(BufferedReader br) throws IOException {
-		String name = null;
-		String lname = null;
-		String phone = null;
-
+		Gson gson = null;
 		try {
-			String nextLine = null;
-			while ((nextLine = br.readLine()) != null) {
-				name = nextLine;
-				lname = br.readLine();
-				phone = br.readLine();
-				System.out.println(name + ' ' + lname + ' ' + phone);
-				addEntry(name, lname, phone);
+			StringBuilder sb = new StringBuilder();
+
+			String line;
+			while ((line = br.readLine()) != null) {
+				sb.append(line);
 			}
+			gson = new GsonBuilder().setPrettyPrinting().create();
+			Type listType = new TypeToken<ArrayList<PhoneEntry>>(){}.getType();
+			List<PhoneEntry> jsonPEntries = gson.fromJson(sb.toString(), listType);
+			jsonPEntries.stream().forEach(pEntry -> {
+				addEntry(pEntry.getPhone(), pEntry);
+			});
+			
 			br.close();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -86,4 +103,9 @@ public class PhoneBook implements Serializable {
 		}
 		return rval;
 	}
+
+	public Map<String, PhoneEntry> get_pbook() {
+		return _pbook;
+	}
+
 }

@@ -18,6 +18,7 @@ public class Utils {
 	public static final int ENTRIES_COUNT = 15;
 	
 	public static final String FILENAME = "pb";
+	public static final String DEFAULT_FILENAME = "phonebook.txt";
 	public static final String EXTENSION = ".json";
 	
 	public static final String CONFIG_FILE = "application.properties";

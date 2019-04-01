@@ -23,13 +23,7 @@ public class PhoneBookResource {
 	@Path("/{pbookName}")
 	public Response getPhoneBookByName(@PathParam("pbookName") String pbookName) throws IOException {
 		PhoneBook pbook = pbookService.getPhoneBook(pbookName);
-		return Response.status(Response.Status.OK).entity(pbook).build();
-	}
-
-	@GET
-	public Response getPhoneBook() throws IOException {
-		PhoneBook pbook = pbookService.getPhoneBook();
-		return Response.status(Response.Status.OK).entity(pbook).build();
+		return Response.status(Response.Status.OK).entity(pbook.get_pbook().values()).build();
 	}
 
 	@DELETE
