@@ -18,12 +18,64 @@ public class PhoneBookResource {
 
 	private PhoneBookService pbookService = new PhoneBookService();
 
+	/**
+	 * @api {get} /phonebooks/:pbookName Request PhoneBook by its name
+	 * @apiName GetPhoneBookByName
+	 * @apiGroup PhoneBook
+	 *
+	 * @apiParam {String} pbookName PhoneBook name.
+	 *
+	 * @apiSuccess {String} Phone entries contained in the phonebook.
+	 *
+	 * @apiSuccessExample Success-Response: HTTP/1.1 200 OK 
+	 * 					[ { "firstname":
+	 *                    "Sedona", "lastname": "Slastnamedona", "phone":
+	 *                    "111-222-999" }, { "firstname": "Flagstaff", "lastname":
+	 *                    "Flagstaff", "phone": "111-222-777" } ]
+	 *
+	 * @apiError PhoneBookNotFound The PhoneBook was not found.
+	 *
+	 * @apiErrorExample Error-Response: HTTP/1.1 404 Not Found 
+	 * 					{ "errorMessage":
+	 *                  "File with name : pb13 does not exist!", "statusCode": 404,
+	 *                  "statusDescription": "Not Found" }
+	 */
+
 	@GET
 	@Path("/{pbookName}")
 	public Response getPhoneBookByName(@PathParam("pbookName") String pbookName) throws CustomException {
 		PhoneBook pbook = pbookService.getPhoneBook(pbookName);
 		return Response.status(Response.Status.OK).entity(pbook.get_pbook().values()).build();
 	}
+
+	/**
+	 * @api {delete} /phonebooks/:pbookName Delete PhoneBook by its name
+	 * @apiName DeletePhoneBookByName
+	 * @apiGroup PhoneBook
+	 *
+	 * @apiParam {String} pbookName PhoneBook name.
+	 *
+	 * @apiSuccess {String} void
+	 *
+	 * @apiSuccessExample Success-Response: HTTP/1.1 200 OK 
+	 * 
+	 * {}
+	 *
+	 * @apiError PhoneBookNotFound The PhoneBook was not found.
+	 *
+	 * @apiErrorExample Error-Response: HTTP/1.1 404 Not Found 
+	 * 					{ "errorMessage":
+	 *                  "File with name : pb13 does not exist!", "statusCode": 404,
+	 *                  "statusDescription": "Not Found" }
+	 *                  
+	 * @apiError PhoneBookNotFound The PhoneBook contains entries, cannot be deleted.
+	 *
+	 * @apiErrorExample Error-Response: HTTP/1.1 400 Bad Request 
+	 * 					{ "errorMessage":
+	 *                  "File contains entries, it cannot be deleted", "statusCode":
+	 *                  400, "statusDescription": "Bad Request" }
+	 *                  
+	 */
 
 	@DELETE
 	@Path("/{pbookName}")
