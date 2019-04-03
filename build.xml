@@ -1,115 +1,116 @@
 
 
 <project name="bkturley Lab 3" default="compile" basedir=".">
-  <property file="build.properties"/>
+	<property file="build.properties" />
 
-  <!-- init target makes the directory structure. You may not
+	<!-- init target makes the directory structure. You may not
        require this if you set your environment up by hand. -->
 
-  <target name="init" >
-    <tstamp/>
-    <mkdir dir="${classes.dir}"/>
-    <mkdir dir="${javadoc.dir}"/>
-    <mkdir dir="${properties.dir}"/>
-    <mkdir dir="${resources.dir}"/>
-    <mkdir dir="${web.dir}"/>
-    <mkdir dir="${apidoc.dir}"/>
-  </target>
+	<target name="init">
+		<tstamp />
+		<mkdir dir="${classes.dir}" />
+		<mkdir dir="${javadoc.dir}" />
+		<mkdir dir="${properties.dir}" />
+		<mkdir dir="${resources.dir}" />
+		<mkdir dir="${web.dir}" />
+		<mkdir dir="${apidoc.dir}" />
+	</target>
 
-  <target name="core-compile">
-    <javac
-      srcdir="${src.dir}"
-      destdir="${classes.dir}">
-      <!-- Make sure you set your classpath! -->
-      <classpath>
-        <fileset dir="${lib.dir}" includes="*.jar"/>
-        <fileset dir="${tomcat.home}-${port}/lib" includes="servlet-api.jar"/>
-        <pathelement path="${classes.dir}" />
-      </classpath>
-    </javac>
-  </target>
+	<target name="core-compile">
+		<javac srcdir="${src.dir}" destdir="${classes.dir}">
+			<!-- Make sure you set your classpath! -->
+			<classpath>
+				<fileset dir="${lib.dir}" includes="*.jar" />
+				<fileset dir="${tomcat.home}-${port}/lib" includes="servlet-api.jar" />
+				<pathelement path="${classes.dir}" />
+			</classpath>
+		</javac>
+	</target>
 
-  <target name="compile" depends="init">
-    <antcall target="core-compile">
-      <param name="port" value="${tomcat.port1}"/>
-    </antcall>
-    <antcall target="core-compile">
-      <param name="port" value="${tomcat.port2}"/>
-    </antcall>
-  </target>
+	<target name="compile" depends="init">
+		<antcall target="core-compile">
+			<param name="port" value="${tomcat.port1}" />
+		</antcall>
+		<antcall target="core-compile">
+			<param name="port" value="${tomcat.port2}" />
+		</antcall>
+	</target>
 
-  <target name="deploy">
-    <antcall target="deploy-port1"/>
-    <antcall target="deploy-port2"/>
-  </target>
+	<target name="deploy">
+		<antcall target="deploy-port1" />
+		<antcall target="deploy-port2" />
+	</target>
 
-  <target name="core-deploy">
-    <echo message="Deploying to tomcat at ${tomcat.home}-${port}"/>
-    <copy file="${dist.jar}" todir="${tomcat.home}-${port}/webapps" overwrite="yes"/>
-  </target>
+	<target name="core-deploy">
+		<echo message="Deploying to tomcat at ${tomcat.home}-${port}" />
+		<copy file="${dist.jar}" todir="${tomcat.home}-${port}/webapps" overwrite="yes" />
+	</target>
 
-  <target name="deploy-port1" depends="dist">
-    <antcall target="core-deploy">
-      <param name="port" value="${tomcat.port1}"/>
-    </antcall>
-  </target>
+	<target name="deploy-port1" depends="dist">
+		<antcall target="core-deploy">
+			<param name="port" value="${tomcat.port1}" />
+		</antcall>
+	</target>
 
-  <target name="deploy-port2" depends="dist">
-    <antcall target="core-deploy">
-      <param name="port" value="${tomcat.port2}"/>
-    </antcall>
-  </target>
-
-  
-  <target name="build" depends="compile">
-    <mkdir dir="${build.home}"/>
-    <mkdir dir="${build.home}/WEB-INF"/>
-    <copy todir="${build.home}/WEB-INF">
-      <fileset dir="." includes="${classes.dir}/**,${lib.dir}/**,${web.dir}/**" excludes="${classes.dir}/driver/**"/>
-    </copy>
-    <copy todir="${build.home}/WEB-INF/${classes.dir}">
-      <fileset dir="${properties.dir}"/>
-    </copy>
-    <copy todir="${build.home}/WEB-INF/${lib.dir.name}">
-      <fileset dir="${lib.dir}"/>
-    </copy>
-    <copy todir="${build.home}">
-        <fileset dir="${resources.dir}" includes="*.html, *.jsp, *.xml"/>
-    </copy>
-    <copy todir="${build.home}">
-        <fileset dir="${web.dir}" includes="*.html, *.jsp"/>
-    </copy>
-    <copy todir="${build.home}/WEB-INF/jsp">
-        <fileset dir="${web.dir}" includes="*.html, *.jsp"/>
-    </copy>
-    <copy file="${webinf.dir}/web.xml" tofile="${build.home}/WEB-INF/web.xml"/>
-  </target>
-    
-  <!-- This example dist target merely jars up the webapp files. -->
-  <target name="dist" depends="build">
-    <jar destfile="${dist.jar}" basedir="${build.home}">
-    </jar>
-  </target>
+	<target name="deploy-port2" depends="dist">
+		<antcall target="core-deploy">
+			<param name="port" value="${tomcat.port2}" />
+		</antcall>
+	</target>
 
 
-  <!-- Clean -->
-  <target name="clean">
-    <delete file="${dist.jar}"/>
-    <delete dir="${tomcat.home}-${tomcat.port1}/webapps/${app.name}"/>
-    <delete dir="${tomcat.home}-${tomcat.port2}/webapps/${app.name}"/>
-    <delete file="${tomcat.home}-${tomcat.port1}/webapps/${dist.jar}"/>
-    <delete file="${tomcat.home}-${tomcat.port2}/webapps/${dist.jar}"/>
-    <delete file="${tomcat.home}-${tomcat.port1}/webapps/${app.name}.war"/>
-    <delete file="${tomcat.home}-${tomcat.port2}/webapps/${app.name}.war"/>
-    <delete dir="${build.home}"/>
-    <delete dir="${classes.dir}"/>
-  </target>
+	<target name="build" depends="compile">
+		<mkdir dir="${build.home}" />
+		<mkdir dir="${build.home}/WEB-INF" />
+		<copy todir="${build.home}/WEB-INF">
+			<fileset dir="." includes="${classes.dir}/**,${lib.dir}/**,${web.dir}/**" excludes="${classes.dir}/driver/**" />
+		</copy>
+		<copy todir="${build.home}/WEB-INF/${classes.dir}">
+			<fileset dir="${properties.dir}" />
+		</copy>
+		<copy todir="${build.home}/WEB-INF/${lib.dir.name}">
+			<fileset dir="${lib.dir}" />
+		</copy>
+		<copy todir="${build.home}">
+			<fileset dir="${resources.dir}" includes="*.html, *.jsp, *.xml" />
+		</copy>
+		<copy todir="${build.home}">
+			<fileset dir="${web.dir}" includes="*.html, *.jsp" />
+		</copy>
+		<copy todir="${build.home}/WEB-INF/jsp">
+			<fileset dir="${web.dir}" includes="*.html, *.jsp" />
+		</copy>
+		<copy todir="${build.home}/apidocjs">
+			<fileset dir="${apidoc.dir}" includes="*" />
+		</copy>
+		<copy file="${webinf.dir}/web.xml" tofile="${build.home}/WEB-INF/web.xml" />
+	</target>
 
-  <!-- Clean all -->
-  <target name="cleanall" depends="clean">
-    <delete dir="${javadoc.dir}"/>
-    <delete file="${submit.jar}"/>
-  </target>
+	<!-- This example dist target merely jars up the webapp files. -->
+	<target name="dist" depends="build">
+		<jar destfile="${dist.jar}" basedir="${build.home}">
+		</jar>
+	</target>
+
+
+	<!-- Clean -->
+	<target name="clean">
+		<delete file="${dist.jar}" />
+		<delete dir="${tomcat.home}-${tomcat.port1}/webapps/${app.name}" />
+		<delete dir="${tomcat.home}-${tomcat.port2}/webapps/${app.name}" />
+		<delete file="${tomcat.home}-${tomcat.port1}/webapps/${dist.jar}" />
+		<delete file="${tomcat.home}-${tomcat.port2}/webapps/${dist.jar}" />
+		<delete file="${tomcat.home}-${tomcat.port1}/webapps/${app.name}.war" />
+		<delete file="${tomcat.home}-${tomcat.port2}/webapps/${app.name}.war" />
+		<delete dir="${build.home}" />
+		<delete dir="${classes.dir}" />
+	</target>
+
+	<!-- Clean all -->
+	<target name="cleanall" depends="clean">
+		<delete dir="${javadoc.dir}" />
+		<delete file="${submit.jar}" />
+	</target>
 
 </project>
-  
+
